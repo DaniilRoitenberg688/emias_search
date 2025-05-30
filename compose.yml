@@ -1,0 +1,17 @@
+services:
+  backend:
+    build: ./backend
+    container_name: emias_backend
+    develop:
+      watch:
+        - action: rebuild 
+          path: backend
+          ignore:
+            - .venv
+            - .idea
+    ports:
+      - "8000:8000"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
