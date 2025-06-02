@@ -9,6 +9,6 @@ user_router = APIRouter(prefix='/users')
 
 
 @user_router.get('', response_model=list[UserOut], status_code=200)
-async def get_all(session: AsyncSession=Depends(get_session), offset: int = 0, limit: int = 10):
+async def get_all(session: AsyncSession=Depends(get_session), offset: int | None = None, limit: int | None = None):
     users: list = await get_users_data(session, offset=offset, limit=limit)
     return [UserOut(fio=i.fio, ib_num=i.ib_num) for i in users]

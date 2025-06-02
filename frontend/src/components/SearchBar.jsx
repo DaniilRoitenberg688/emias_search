@@ -1,10 +1,13 @@
-import {Input} from 'antd'
+import {Input, Button} from 'antd'
+import {SearchOutlined} from '@ant-design/icons'
 
+
+const {Search} = Input
 
 function SearchBar() {
     return (
         <>
-            <Input></Input>
+            <Search placeholder="input search text" enterButton={<Button color={"cyan"} variant={"solid"}><SearchOutlined style={{color: 'white'}}/></Button>} onSearch={() => {}}/>
         </>
     )
 }

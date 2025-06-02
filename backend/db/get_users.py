@@ -3,11 +3,18 @@ import asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import text
 
-async def get_users(session: AsyncSession, limit=10, offset=0):
+async def get_users(session: AsyncSession, limit, offset):
 
 
     with open('db/sql_requests/get_users_request', 'r') as file:
-        query = text(file.read().format(limit, offset))
+        #LIMIT {} OFFSET {}
+        data = file.read()
+        data += '\n'
+        if limit:
+            data += f'LIMIT {limit} '
+        if offset:
+            data += f'OFFSET {offset}'
+        query = text(data)
 
 
     request = await session.execute(query)
