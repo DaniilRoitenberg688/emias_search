@@ -1,7 +1,7 @@
 services:
   backend:
     build: ./backend
-    container_name: emias_backend
+    container_name: emias_search_backend
     develop:
       watch:
         - action: rebuild 
@@ -14,4 +14,19 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
+
+  nginx:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: emias_search_frontend
+    ports:
+      - "127.0.0.1:5252:80"
+    depends_on:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 

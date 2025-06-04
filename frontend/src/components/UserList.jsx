@@ -1,4 +1,4 @@
-import {Divider, List, Skeleton} from 'antd';
+import {Divider, List, Skeleton, Spin} from 'antd';
 import {Button} from 'antd';
 import VirtualList from 'rc-virtual-list';
 import {ScanOutlined} from '@ant-design/icons';
@@ -6,7 +6,6 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 
 function UserList({data, isLoading, onScroll}) {
     const HEIGHT = window.screen.height
-    console.log(HEIGHT)
     return (
         <>
             <div id="scrollableDiv"
@@ -21,7 +20,7 @@ function UserList({data, isLoading, onScroll}) {
                     dataLength={data.length}
                     next={onScroll}
                     hasMore={data.length < data.length + 1}
-                    loader={<Skeleton paragraph={{rows: 1}} active/>}
+                    loader={null}
                     endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
                     scrollableTarget="scrollableDiv"
                 >
@@ -33,7 +32,7 @@ function UserList({data, isLoading, onScroll}) {
                                       <Button color={'cyan'} variant={"solid"}><ScanOutlined/></Button>
                                   </div>
                               </List.Item>
-                          )}>
+                          )} >
 
                     </List>
                 </InfiniteScroll>
