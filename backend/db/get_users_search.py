@@ -21,15 +21,26 @@ async def get_users_search(session: AsyncSession, limit, offset, line):
         search_fields = line.split()
         print(search_fields)
         if len(search_fields) == 1:
-            command = "\nWHERE md.surname LIKE '%{line}%' OR md.name LIKE '%{line}%' OR md.patron LIKE '%{line}%'".format(
-                line=search_fields[0])
+            if not line.isdigit():
+                if '-' in line:
+                    command = "\nWHERE mm.mdoc_get_num_format(hd.admission_num,hd.admission_year,md.num_org,md.num_filial,md.num_type,mdtp.id,mdtp.class, data) LIKE '{line}%'".format(
+                        line=search_fields[0])
+                else:
+                    command = "\nWHERE md.surname LIKE '%{line}%' OR md.name LIKE '%{line}%' OR md.patron LIKE '%{line}%'".format(
+                        line=search_fields[0])
+            else:
+                command = "\nWHERE mm.mdoc_get_num_format(hd.admission_num,hd.admission_year,md.num_org,md.num_filial,md.num_type,mdtp.id,mdtp.class, data) LIKE '{line}%' OR md.surname LIKE '%{line}%' OR md.name LIKE '%{line}%' OR md.patron LIKE '%{line}%'".format(
+                    line=search_fields[0])
+
+
+
         elif len(search_fields) == 2:
             command = "\nWHERE md.surname LIKE '%{line1}%' AND md.name LIKE '%{line2}%' OR md.name LIKE '%{line1}%' AND md.patron LIKE '%{line2}%' OR md.surname LIKE '%{line1}%' AND md.patron LIKE '%{line2}%' OR md.surname LIKE '%{line2}%' AND md.name LIKE '%{line1}%' OR md.name LIKE '%{line2}%' AND md.patron LIKE '%{line1}%' OR md.surname LIKE '%{line2}%' AND md.patron LIKE '%{line1}%'".format(
                 line1=search_fields[0], line2=search_fields[1])
             # command = "\nWHERE md.surname LIKE '%{line1}%' AND md.name LIKE '%{line2}%'".format(line1=search_fields[0], line2=search_fields[1])
 
         elif len(search_fields) == 3:
-            command = "\nWHERE (md.surname LIKE '{line1}' AND md.name LIKE '{line2}' AND md.patron LIKE '{line3}') OR (md.surname LIKE '{line1}' AND md.name LIKE '{line3}' AND md.patron LIKE '{line2}') OR (md.surname LIKE '{line2}' AND md.name LIKE '{line1}' AND md.patron LIKE '{line3}') OR (md.surname LIKE '{line2}' AND md.name LIKE '{line3}' AND md.patron LIKE '{line1}') OR (md.surname LIKE '{line3}' AND md.name LIKE '{line1}' AND md.patron LIKE '{line2}') OR (md.surname LIKE '{line3}' AND md.name LIKE '{line2}' AND md.patron LIKE '{line1}')".format(
+            command = "\nWHERE (md.surname LIKE '%{line1}%' AND md.name LIKE '%{line2}%' AND md.patron LIKE '%{line3}%') OR (md.surname LIKE '%{line1}' AND md.name LIKE '%{line3}%' AND md.patron LIKE '%{line2}%') OR (md.surname LIKE '%{line2}%' AND md.name LIKE '%{line1}%' AND md.patron LIKE '%{line3}%') OR (md.surname LIKE '%{line2}%' AND md.name LIKE '%{line3}%' AND md.patron LIKE '%{line1}%') OR (md.surname LIKE '%{line3}%' AND md.name LIKE '%{line1}%' AND md.patron LIKE '%{line2}%') OR (md.surname LIKE '%{line3}%' AND md.name LIKE '%{line2}%' AND md.patron LIKE '%{line1}%')".format(
                 line1=search_fields[0], line2=search_fields[1], line3=search_fields[2])
 
         else:
