@@ -1,13 +1,14 @@
-from db.engine import get_session
 import asyncio
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import text
 
+from db.engine import get_session
+
+
 async def get_users(session: AsyncSession, limit, offset):
-
-
     with open('db/sql_requests/get_users_request', 'r') as file:
-        #LIMIT {} OFFSET {}
+        # LIMIT {} OFFSET {}
         data = file.read()
         data += '\n'
         if limit:
@@ -16,18 +17,11 @@ async def get_users(session: AsyncSession, limit, offset):
             data += f'OFFSET {offset}'
         query = text(data)
 
-
     request = await session.execute(query)
 
-
     return request
-
 
 
 if __name__ == '__main__':
     session = get_session()
     asyncio.run(get_users(session=session))
-
-
-
-

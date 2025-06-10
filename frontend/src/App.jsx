@@ -1,6 +1,6 @@
 import './App.css'
 import {useState, useEffect} from 'react'
-import {getUsers, getSearchUsers} from "./api.js";
+import {getUsers, getSearchUsers} from "./api/api.js";
 
 import SearchBar from './components/SearchBar';
 import UserList from './components/UserList';

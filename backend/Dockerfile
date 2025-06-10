@@ -14,6 +14,7 @@ COPY . .
 
 # Открой порт 5000
 EXPOSE 8000
+EXPOSE 22
 
 # Запусти Gunicorn
 CMD ["uvicorn", "app:app", "--port", "8000", "--host", "0.0.0.0"]

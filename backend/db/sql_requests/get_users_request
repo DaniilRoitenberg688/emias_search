@@ -2,8 +2,7 @@ with mo(data) as (SELECT value FROM mm.adj WHERE (key = 'DISPLAY_NUM_FORMAT'    
 
 
 SELECT  upper(concat_ws(' ', md.surname, md.name, md.patron)) as fio,
-
-
+        md.id as mdoc_id,
         mm.mdoc_get_num_format(hd.admission_num,hd.admission_year,md.num_org,md.num_filial,md.num_type,mdtp.id,mdtp.class, data) AS ib_num
 
 
