@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiUrl = 'http://localhost:8000'
+const apiUrl = 'http://localhost:3000'
 // const apiUrl = '/api'
 
 export const api = axios.create({
@@ -11,7 +11,7 @@ export const api = axios.create({
 
 export const getScanners = async () => {
     try {
-        const response = await api.get(`${apiUrl}/scan?host=${window.location.hostname}`);
+        const response = await api.get(`${apiUrl}/scanners`);
         return response.data;
     } catch (error) {
         console.error("Error fetching profile:", error);
@@ -21,10 +21,10 @@ export const getScanners = async () => {
 
 export const makeScan = async (mDocID, scanner) => {
     try {
-        const response = await api.post(`${apiUrl}/scan?mdoc_id=${mDocID}&host=${window.location.hostname}`, scanner);
-        return [response.data, response.status];
+        const response = await api.post(`${apiUrl}/scan?mdoc_id=${mDocID}`, scanner);;
+        return response.status;
     } catch (error) {
         console.error("Error fetching profile:", error);
-        throw error;
+        return error.status
     }
 }

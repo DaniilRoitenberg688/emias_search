@@ -5,7 +5,8 @@ import {makeScan} from "../api/scanner_api.js";
 function ModalChooseScanner({open, onCloseScan, data, isLoading, patient, onClose}) {
 
     const scan = async (item) => {
-        let [_, code] = await makeScan(patient.mdoc_id, item);
+        let code = await makeScan(patient.mdoc_id, item);
+        console.log(code);
         onCloseScan(code)
 
 

@@ -4,4 +4,6 @@ __pycache__
 .venv
 .idea
 .vscode
-scanner_backend
+test*
+*.spec
+build

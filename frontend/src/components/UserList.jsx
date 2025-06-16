@@ -68,7 +68,7 @@ function UserList({data, isLoading, onScroll}) {
 
                     </List>
                     <ModalChooseScanner open={isModalOpen} onCloseScan={onModalClose} data={scanners} isLoading={isScannersLoading} patient={patient} onClose={() => {openModal(false)}}></ModalChooseScanner>
-                    <ResultModal isOpen={resultModal} onClose={() => {setResultModal(false)}} isOk={isScanOk} patient={patient}></ResultModal>
+                    <ResultModal isOpen={resultModal} onClose={() => {setResultModal(false); setIsScanOk(false)}} isOk={isScanOk} patient={patient}></ResultModal>
                 </InfiniteScroll>
             </div>
         </>
