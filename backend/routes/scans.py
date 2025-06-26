@@ -16,21 +16,21 @@ from models import Scanner, ScannerType, PdfMdocModel
 scan_router = APIRouter(prefix='/scan')
 
 
-@scan_router.get('')
-async def get_scanners(host: str):
-    try:
-        client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(hostname=host, username=config.SSH_USER, password=config.SSH_PASSWORD)
-        stdin, stdout, stderr = client.exec_command(
-            ' '.join([f'"{config.BASE_COMMAND}"', '--listdevices', '--driver', 'twain']))
-        scanners = stdout.read().decode().split('\r\n')
-        print(scanners)
-        client.close()
-        return [Scanner(name=i, scanner_type=ScannerType.twain) for i in scanners if i]
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=400, detail='something went wrong')
+# @scan_router.get('')
+# async def get_scanners(host: str):
+#     try:
+#         client = paramiko.SSHClient()
+#         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+#         client.connect(hostname=host, username=config.SSH_USER, password=config.SSH_PASSWORD)
+#         stdin, stdout, stderr = client.exec_command(
+#             ' '.join([f'"{config.BASE_COMMAND}"', '--listdevices', '--driver', 'twain']))
+#         scanners = stdout.read().decode().split('\r\n')
+#         print(scanners)
+#         client.close()
+#         return [Scanner(name=i, scanner_type=ScannerType.twain) for i in scanners if i]
+#     except Exception as e:
+#         print(e)
+#         raise HTTPException(status_code=400, detail='something went wrong')
 
 
 # @scan_router.post('')
@@ -74,7 +74,7 @@ async def create_scan(user_scan: PdfMdocModel, session_pdf: AsyncSession = Depen
     try:
         new_doc = PdfMdoc()
         new_doc.mdoc_id = user_scan.mdoc_id
-        new_doc.pdf_data = user_scan.data
+        new_doc.pdf_data = user_scan.data.encode()
         session_pdf.add(new_doc)
         await session_pdf.commit()
 

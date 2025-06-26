@@ -2,6 +2,7 @@ import base64
 import os
 from enum import Enum
 from subprocess import run
+import platform
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -14,6 +15,7 @@ from requests import post
 class ScannerType(str, Enum):
     twain = 'twain'
     wia = 'wia'
+    sane = 'sane'
 
 
 class Scanner(BaseModel):
@@ -44,21 +46,31 @@ async def ping():
 
 @app.get('/scanners')
 async def get_scanners() -> list[Scanner]:
-    wia_command = [base_command, '--listdevices', '--driver', 'wia']
-    twain_command = [base_command, '--listdevices', '--driver', 'twain']
-
-    wia_command_result = run(wia_command, capture_output=True)
-    twain_command_result = run(twain_command, capture_output=True)
-
     scanners = []
+    os_name = platform.system()
+    print(os_name)
+    if os_name == 'Linux':
+        sane_command = [base_command, 'console', '--listdevices', '--driver', 'sane']
+        sane_command_result = run(sane_command, capture_output=True)
+        for scanner in sane_command_result.stdout.decode().split('\n'):
+            if scanner:
+                scanners.append(Scanner(name=scanner, scanner_type=ScannerType.sane))
 
-    for scanner in twain_command_result.stdout.decode().split('\r\n'):
-        if scanner:
-            scanners.append(Scanner(name=scanner, scanner_type=ScannerType.twain))
+    else:
+        wia_command = [base_command, '--listdevices', '--driver', 'wia']
+        twain_command = [base_command, '--listdevices', '--driver', 'twain']
 
-    for scanner in wia_command_result.stdout.decode().split('\r\n'):
-        if scanner:
-            scanners.append(Scanner(name=scanner, scanner_type=ScannerType.wia))
+
+        wia_command_result = run(wia_command, capture_output=True)
+        twain_command_result = run(twain_command, capture_output=True)
+
+        for scanner in twain_command_result.stdout.decode().split('\r\n'):
+            if scanner:
+                scanners.append(Scanner(name=scanner, scanner_type=ScannerType.twain))
+
+        for scanner in wia_command_result.stdout.decode().split('\r\n'):
+            if scanner:
+                scanners.append(Scanner(name=scanner, scanner_type=ScannerType.wia))
 
     return scanners
 
@@ -67,6 +79,10 @@ async def get_scanners() -> list[Scanner]:
 async def make_scan(scanner: Scanner, mdoc_id: str):
     command = [base_command, '-o', f'{mdoc_id}.pdf', '--noprofile', '--driver', scanner.scanner_type, '--device',
                scanner.name]
+    if scanner.scanner_type == ScannerType.sane:
+        command = [base_command, 'console', '-o', f'{mdoc_id}.pdf', '--noprofile', '--driver', scanner.scanner_type, '--device',
+                   scanner.name]
+
 
     command_result = run(command, capture_output=True)
     code = command_result.returncode
@@ -86,7 +102,7 @@ async def make_scan(scanner: Scanner, mdoc_id: str):
         if request.status_code == 200:
             return {'result': 'ok'}
         else:
-            raise HTTPException(status_code=400, detail=request.json())
+            raise HTTPException(status_code=400, detail=f'cannot send data on server. Status code: {request.status_code}')
     else:
         raise HTTPException(400, {'result': 'something went wrong', 'reason': command_result.stdout.decode()})
 
