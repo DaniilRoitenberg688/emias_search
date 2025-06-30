@@ -1,68 +1,20 @@
 import './App.css'
-import {useState, useEffect} from 'react'
-import {getUsers, getSearchUsers} from "./api/api.js";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
+import LoginView from "./views/LoginView";
+import MainView from "./views/MainView.jsx";
+import {useState} from "react";
 
-import SearchBar from './components/SearchBar';
-import UserList from './components/UserList';
+
 
 function App() {
-
-
-    const [isLoading, setIsLoading] = useState(false)
-    const [data, setData] = useState([])
-
-    const [page, setPage] = useState(0);
-    const toLoad = 20
-
-    const [searchLine, setSearchLine] = useState('')
-
-    const loadUsers = async (line) => {
-        setIsLoading(true)
-        let dataUsers = []
-        if (!line) {
-            dataUsers = await getUsers(0, toLoad)
-        } else {
-            dataUsers = await getSearchUsers(line, 0, toLoad)
-        }
-        setData(dataUsers)
-        setIsLoading(false)
-    }
-
-    const onScroll = async () => {
-        let oldData = data;
-        let newData = []
-        if (!searchLine) {
-            newData = await getUsers((page + 1) * toLoad, toLoad)
-        }
-        else {
-            newData = await getSearchUsers(searchLine, 0, toLoad)
-        }
-
-        oldData.concat(newData);
-        setData([...data, ...newData])
-        setPage(page + 1)
-
-    }
-
-    useEffect(() => {
-        loadUsers().catch(error => {
-            console.log(error)
-        });
-    }, [])
-
-    const updateSearchData = async (line) => {
-        setSearchLine(line)
-        await loadUsers(line)
-        setPage(0)
-    }
-
-
     return (
         <>
-            <div style={{paddingTop: '20px', paddingBottom: '20px'}}>
-                <SearchBar setLine={updateSearchData}></SearchBar>
-            </div>
-            <UserList data={data} isLoading={isLoading} onScroll={onScroll}></UserList>
+            <BrowserRouter>
+                <Routes>
+                    <Route path={"/login"} element={<LoginView />}/>
+                    <Route path={"*"} element={<MainView />}/>
+                </Routes>
+            </BrowserRouter>
         </>
     )
 }

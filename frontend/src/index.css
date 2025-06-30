@@ -1,3 +1,8 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
 .ant-input:focus {
     border-color: #13c2c2;
     outline: 0;
@@ -9,6 +14,23 @@
     outline: 0;
 
 }
+
+.ant-input-password:focus {
+    border-color: #13c2c2;
+    outline: 0;
+
+}
+
+.ant-input-password:hover {
+    border-color: #13c2c2;
+    outline: 0;
+
+}
+
+
+
+
+
 #search-bar {
     align-self: center;
 }
@@ -34,6 +56,11 @@
     #scrollingList {
         margin: 0 100px;
     }
+    #loginCard {
+        margin: 50px 250px;
+        padding: 0 100px;
+
+    }
 
 }
 
@@ -44,4 +71,14 @@
     #scrollableDiv::-webkit-scrollbar {
         display: none;
     }
+
+    #loginCard {
+        margin: 75px 100px;
+        padding: 0 25px;
+    }
 }
+
+
+
+
+

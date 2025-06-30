@@ -74,7 +74,11 @@ async def create_scan(user_scan: PdfMdocModel, session_pdf: AsyncSession = Depen
     try:
         new_doc = PdfMdoc()
         new_doc.mdoc_id = user_scan.mdoc_id
-        new_doc.pdf_data = user_scan.data.encode()
+        pdf_data = base64.b64decode(user_scan.data)
+        new_doc.pdf_data = pdf_data
+        new_doc.doc_name = str(user_scan.mdoc_id)
+        new_doc.group_doc_id = 1
+
         session_pdf.add(new_doc)
         await session_pdf.commit()
 

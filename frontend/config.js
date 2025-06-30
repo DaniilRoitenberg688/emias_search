@@ -5,4 +5,3 @@
 window._env_ = {
     VITE_APP_API_URL: '/api',
 }
-console.log('aaaaa')

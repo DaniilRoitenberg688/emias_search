@@ -13,6 +13,7 @@ RUN npm install
 COPY . .
 ENV VITE_API_BASE_URL=/api
 ENV NODE_ENV=production
+ENV VITE_SESSION_TIME_IN_MILLISECONDS=3600000
 RUN npm run build
 
 # 2. Этап запуска (release stage)

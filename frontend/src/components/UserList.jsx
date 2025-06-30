@@ -28,13 +28,19 @@ function UserList({data, isLoading, onScroll}) {
 
     }
 
-    const onModalOpen = async (patientData) => {
-        openModal(true)
-        setPatient(patientData)
+    const getScannersData = async () => {
         setIsScannersLoading(true)
         let sc = await getScanners()
         setScanners(sc)
         setIsScannersLoading(false)
+    }
+
+    const onModalOpen = async (patientData) => {
+        openModal(true)
+        setPatient(patientData)
+        if (!scanners.length) {
+            getScannersData()
+        }
     }
 
     return (
@@ -67,7 +73,7 @@ function UserList({data, isLoading, onScroll}) {
                           )}>
 
                     </List>
-                    <ModalChooseScanner open={isModalOpen} onCloseScan={onModalClose} data={scanners} isLoading={isScannersLoading} patient={patient} onClose={() => {openModal(false)}}></ModalChooseScanner>
+                    <ModalChooseScanner open={isModalOpen} onCloseScan={onModalClose} data={scanners} reloadScanners={getScannersData} isLoading={isScannersLoading} patient={patient} onClose={() => {openModal(false)}}></ModalChooseScanner>
                     <ResultModal isOpen={resultModal} onClose={() => {setResultModal(false); setIsScanOk(false)}} isOk={isScanOk} patient={patient}></ResultModal>
                 </InfiniteScroll>
             </div>

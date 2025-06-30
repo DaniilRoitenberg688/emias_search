@@ -48,7 +48,6 @@ async def ping():
 async def get_scanners() -> list[Scanner]:
     scanners = []
     os_name = platform.system()
-    print(os_name)
     if os_name == 'Linux':
         sane_command = [base_command, 'console', '--listdevices', '--driver', 'sane']
         sane_command_result = run(sane_command, capture_output=True)
@@ -93,12 +92,11 @@ async def make_scan(scanner: Scanner, mdoc_id: str):
 
         send_data = {
             'mdoc_id': mdoc_id,
-            'data': base64.b64encode(data).decode("utf-8")
+            'data': base64.b64encode(data).decode('utf-8')
         }
         os.remove(f'{mdoc_id}.pdf')
 
         request = post(url, headers={"Content-Type": "application/json"}, json=send_data)
-        print(request.status_code)
         if request.status_code == 200:
             return {'result': 'ok'}
         else:
