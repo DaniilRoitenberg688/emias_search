@@ -26,7 +26,7 @@ class Scanner(BaseModel):
 load_dotenv()
 
 base_command = os.environ.get('COMMAND', 'C:/Program Files/NAPS2/NAPS2.Console.exe')
-url = os.environ.get('URL', 'http://localhost:8000/api/scan')
+url = os.environ.get('URL', 'http://localhost:5252')
 
 app = FastAPI()
 
@@ -96,7 +96,7 @@ async def make_scan(scanner: Scanner, mdoc_id: str):
         }
         os.remove(f'{mdoc_id}.pdf')
 
-        request = post(url, headers={"Content-Type": "application/json"}, json=send_data)
+        request = post(f'{url}/api/scan', headers={"Content-Type": "application/json"}, json=send_data)
         if request.status_code == 200:
             return {'result': 'ok'}
         else:
