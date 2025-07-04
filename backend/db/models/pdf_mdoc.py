@@ -1,11 +1,10 @@
-from db.engine import Base
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, Date, BINARY, String, UUID, text
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncAttrs
-from config import config
-from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import date
+from datetime import datetime
 
+from sqlalchemy import Integer, Date, BINARY, String, UUID, text
+from sqlalchemy.orm import Mapped, mapped_column
+
+from config import config
+from db.engine import Base
 
 
 class PdfMdoc(Base):
@@ -16,5 +15,4 @@ class PdfMdoc(Base):
     pdf_data: Mapped[bytes] = mapped_column(BINARY)
     group_doc_id: Mapped[int] = mapped_column(Integer)
     doc_name: Mapped[str] = mapped_column(String)
-    create_dt: Mapped[date] = mapped_column(Date, default=date.today())
-
+    create_dt: Mapped[datetime] = mapped_column(Date, default=datetime.now())
