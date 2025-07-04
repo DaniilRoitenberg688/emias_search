@@ -1,7 +1,10 @@
 import axios from "axios";
 
-const apiUrl = 'http://localhost:8000/api'
-// const apiUrl = '/api'
+// const apiUrl = 'http://localhost:8000/api'
+let apiUrl = import.meta.env.VITE_API_URL;
+if (apiUrl === undefined) {
+    apiUrl = 'http://localhost:8000/api';
+}
 
 export const api = axios.create({
     headers: {

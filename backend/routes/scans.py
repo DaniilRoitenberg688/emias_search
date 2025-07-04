@@ -1,17 +1,14 @@
 import base64
-import os
-import uuid
 
-import paramiko
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from config import config
 from db.engine import get_session_pdf
 from db.models import PdfMdoc
-from models import Scanner, ScannerType, PdfMdocModel
+from models import PdfMdocModel
+import uuid
 
 scan_router = APIRouter(prefix='/scan')
 
@@ -76,7 +73,7 @@ async def create_scan(user_scan: PdfMdocModel, session_pdf: AsyncSession = Depen
         new_doc.mdoc_id = user_scan.mdoc_id
         pdf_data = base64.b64decode(user_scan.data)
         new_doc.pdf_data = pdf_data
-        new_doc.doc_name = str(user_scan.mdoc_id)
+        new_doc.doc_name = str(uuid.uuid4())
         new_doc.group_doc_id = 1
 
         session_pdf.add(new_doc)
