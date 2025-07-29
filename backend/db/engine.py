@@ -6,12 +6,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 DATABASE_URL = config.DATABASE_URL
 DATABASE_URL_PDF = config.DATABASE_URL_PDF
+DATABASE_URL_GROUP_DOC = config.DATABASE_URL_GROUP_DOC
 
 engine = create_async_engine(DATABASE_URL)
 engine_pdf = create_async_engine(DATABASE_URL_PDF)
+engine_group_doc = create_async_engine(DATABASE_URL_GROUP_DOC)
 
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 async_session_maker_pdf = async_sessionmaker(engine_pdf, expire_on_commit=False)
+async_session_maker_group_doc = async_sessionmaker(engine_group_doc, expire_on_commit=False)
 
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -25,4 +28,9 @@ async def get_session() -> AsyncSession:
 
 async def get_session_pdf() -> AsyncSession:
     async with async_session_maker_pdf() as session:
+        yield session
+
+
+async def get_session_group_doc() -> AsyncSession:
+    async with async_session_maker_group_doc() as session:
         yield session

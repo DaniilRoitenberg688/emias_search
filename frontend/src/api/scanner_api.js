@@ -19,9 +19,9 @@ export const getScanners = async () => {
     }
 }
 
-export const makeScan = async (mDocID, scanner) => {
+export const makeScan = async (mDocID, scanner, groupDocId) => {
     try {
-        const response = await api.post(`${apiUrl}/scan?mdoc_id=${mDocID}`, scanner);;
+        const response = await api.post(`${apiUrl}/scan?mdoc_id=${mDocID}group_doc_id=${groupDocId}`, scanner);;
         return response.status;
     } catch (error) {
         console.error("Error fetching profile:", error);

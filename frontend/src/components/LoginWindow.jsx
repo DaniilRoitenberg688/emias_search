@@ -19,6 +19,8 @@ function LoginWindow() {
             localStorage.setItem('firstName', data.firstName)
             localStorage.setItem('lastName', data.lastName)
             localStorage.setItem('token', token)
+            console.log(data['profiles'][0])
+            localStorage.setItem('deptId', data['profiles'][0]['deptID'])
             if (values.remember) {
                 localStorage.setItem('time', Date.now())
                 localStorage.setItem('afterLogin', true)

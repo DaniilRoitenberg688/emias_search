@@ -1,10 +1,11 @@
 import axios from "axios";
 
-// const apiUrl = 'http://localhost:8000/api'
+
 let apiUrl = import.meta.env.VITE_API_URL;
 if (apiUrl === undefined) {
-    apiUrl = 'http://localhost:8000/api';
+    apiUrl = 'http://localhost:8000/api'
 }
+
 
 export const api = axios.create({
     headers: {
@@ -12,9 +13,9 @@ export const api = axios.create({
     },
 });
 
-export const getUsers = async (offset, limit) => {
+export const getUsers = async (offset, limit, usersType) => {
     try {
-        const response = await api.get(`${apiUrl}/users?offset=${offset}&limit=${limit}`);
+        const response = await api.get(`${apiUrl}/users?offset=${offset}&limit=${limit}&type_of_users=${usersType}&dept_id=${localStorage.getItem('deptId')}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching profile:", error);
@@ -22,9 +23,9 @@ export const getUsers = async (offset, limit) => {
     }
 };
 
-export const getSearchUsers = async (line, offset, limit) => {
+export const getSearchUsers = async (line, offset, limit, usersType) => {
     try {
-        const response = await api.get(`${apiUrl}/users/search?offset=${offset}&limit=${limit}&search_line=${line}`);
+        const response = await api.get(`${apiUrl}/users/search?offset=${offset}&limit=${limit}&search_line=${line}&type_of_users=${usersType}&dept_id=${localStorage.getItem('deptId')}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching profile:", error);

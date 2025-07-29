@@ -9,9 +9,7 @@ function SearchBar({setLine}) {
     const [timeoutId, setTimeoutId] = useState(null)
     const setOnChange = (val) => {
         clearTimeout(timeoutId)
-        console.log(document.getElementById('searchBar').value)
-        console.log(val)
-        setTimeoutId(setTimeout(() => setLine(val), 200))
+        setTimeoutId(setTimeout(() => setLine(val), 1000))
     }
 
     // useEffect(() => {

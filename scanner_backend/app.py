@@ -75,7 +75,7 @@ async def get_scanners() -> list[Scanner]:
 
 
 @app.post('/scan')
-async def make_scan(scanner: Scanner, mdoc_id: str):
+async def make_scan(scanner: Scanner, mdoc_id: str, group_doc_id: int):
     command = [base_command, '-o', f'{mdoc_id}.pdf', '--noprofile', '--driver', scanner.scanner_type, '--device',
                scanner.name]
     if scanner.scanner_type == ScannerType.sane:
@@ -92,7 +92,8 @@ async def make_scan(scanner: Scanner, mdoc_id: str):
 
         send_data = {
             'mdoc_id': mdoc_id,
-            'data': base64.b64encode(data).decode('utf-8')
+            'data': base64.b64encode(data).decode('utf-8'),
+            'group_doc_id': group_doc_id
         }
         os.remove(f'{mdoc_id}.pdf')
 

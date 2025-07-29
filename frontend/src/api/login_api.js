@@ -1,8 +1,8 @@
 import {Buffer} from "buffer";
 import axios from "axios";
 
-// const apiUrl = 'http://j-auth-tpak.m15.dzm/api/v2/login'
-const apiUrl = import.meta.env.VITE_LOGIN_API_URL;
+const apiUrl = 'http://j-auth-tpak.m15.dzm/api/v2/login'
+// const apiUrl = import.meta.env.VITE_LOGIN_API_URL;
 
 export const api = axios.create({
 

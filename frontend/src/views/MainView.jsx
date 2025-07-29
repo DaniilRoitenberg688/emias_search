@@ -1,10 +1,11 @@
 import {useState, useEffect} from 'react'
 import {getUsers, getSearchUsers} from "../api/api.js";
-
+import BottomMenu from "../components/BottomMenu.jsx";
 import SearchBar from '../components/SearchBar';
 import UserList from '../components/UserList';
 import {Button, Layout, Typography} from "antd";
 import {LogoutOutlined, UserOutlined} from "@ant-design/icons";
+import {getGroupDoc} from "../api/group_doc.js";
 
 
 
@@ -19,6 +20,10 @@ function MainView() {
     const toLoad = 20
 
     const [searchLine, setSearchLine] = useState('')
+
+    const [currentUsersType, setCurrentUsersType] = useState('all_users');
+
+    const [groupDoc, setGroupDoc] = useState([]);
 
     const checkLogin = async () => {
         if (localStorage.getItem('token') === null) {
@@ -53,25 +58,30 @@ function MainView() {
 
     }
 
-    const loadUsers = async (line) => {
+    const loadUsers = async (line, type) => {
         setIsLoading(true)
         let dataUsers = []
         if (!line) {
-            dataUsers = await getUsers(0, toLoad)
+            console.log('hier')
+            if (type !== 'all_users') {
+                dataUsers = await getUsers(0, toLoad, type)
+            }
         } else {
-            dataUsers = await getSearchUsers(line, 0, toLoad)
+            console.log('cssss')
+            dataUsers = await getSearchUsers(line, 0, toLoad, type)
         }
         setData(dataUsers)
         setIsLoading(false)
     }
 
     const onScroll = async () => {
+        console.log('ssss')
         let oldData = data;
         let newData = []
         if (!searchLine) {
-            newData = await getUsers((page + 1) * toLoad, toLoad)
+            newData = await getUsers((page + 1) * toLoad, toLoad, currentUsersType)
         } else {
-            newData = await getSearchUsers(searchLine, 0, toLoad)
+            newData = await getSearchUsers(searchLine, 0, toLoad, currentUsersType)
         }
 
         oldData.concat(newData);
@@ -80,17 +90,27 @@ function MainView() {
 
     }
 
+    const loadGroupDocs = async () => {
+        let data = await getGroupDoc()
+        setGroupDoc(data)
+    }
+
+
     useEffect(() => {
         checkLogin()
-        loadUsers().catch(error => {
-            console.log(error)
-        });
+        loadGroupDocs()
     }, [])
 
     const updateSearchData = async (line) => {
         setSearchLine(line)
-        await loadUsers(line)
+        await loadUsers(line, currentUsersType)
         setPage(0)
+    }
+
+    const changeUsersType = async (type) => {
+        setCurrentUsersType(type)
+        await loadUsers(searchLine, type)
+
     }
 
     const logout = () => {
@@ -101,19 +121,26 @@ function MainView() {
 
     return (
         <>
-            <Layout style={{ padding: 0, margin: 0 }}>
+            <Layout style={{ padding: 0, margin: 0, display: 'flex', flexDirection: 'column' }}>
                 <Header style={{boxSizing: 'border-box', backgroundColor: '#13c2c2', marginBottom: '25px', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                     {/*<span>{localStorage.getItem('firstName')} {localStorage.getItem('lastName')}</span>*/}
                     <Text strong={true} style={{color: '#fafafa', lineHeight: '25px', fontSize: '17px'}}><UserOutlined />  {localStorage.getItem('firstName')} {localStorage.getItem('lastName')}</Text>
                     <Button onClick={logout} variant={"solid"} color={'danger'} shape={'round'} style={{}}>Выйти <LogoutOutlined /></Button>
+
                 </Header>
 
-                <Content>
+                <Content style={{flex: 1}}>
+
                     <div style={{paddingTop: '20px', paddingBottom: '20px'}}>
                         <SearchBar setLine={updateSearchData}></SearchBar>
                     </div>
-                    <UserList data={data} isLoading={isLoading} onScroll={onScroll}></UserList>
+                    <UserList data={data} isLoading={isLoading} onScroll={onScroll} groupDoc={groupDoc}></UserList>
+
                 </Content>
+
+                <Footer style={{width: '100%', padding: 0, position: 'absolute', bottom: 0}}>
+                        <BottomMenu changeUsersType={changeUsersType}/>
+                </Footer>
             </Layout>
         </>
     )

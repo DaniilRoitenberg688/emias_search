@@ -10,7 +10,7 @@ from db.models import PdfMdoc
 from models import PdfMdocModel
 import uuid
 
-scan_router = APIRouter(prefix='/scan')
+scan_router = APIRouter(prefix='/scan', tags=['scan'])
 
 
 # @scan_router.get('')
@@ -74,11 +74,11 @@ async def create_scan(user_scan: PdfMdocModel, session_pdf: AsyncSession = Depen
         pdf_data = base64.b64decode(user_scan.data)
         new_doc.pdf_data = pdf_data
         new_doc.doc_name = str(uuid.uuid4())
-        new_doc.group_doc_id = 1
+        new_doc.group_doc_id = user_scan.group_doc_id
 
         session_pdf.add(new_doc)
         await session_pdf.commit()
 
     except Exception as e:
-        raise HTTPException(status_code=400, detail={'error': e})
+        raise HTTPException(status_code=400, detail={'error': str(e)})
 

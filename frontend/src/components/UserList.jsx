@@ -9,7 +9,7 @@ import {getScanners} from "../api/scanner_api.js";
 import okModal from "./ResultModal.jsx";
 import ResultModal from "./ResultModal.jsx";
 
-function UserList({data, isLoading, onScroll}) {
+function UserList({data, isLoading, onScroll, groupDoc}) {
     const HEIGHT = window.screen.height
     const [isModalOpen, openModal] = useState(false)
     const [scanners, setScanners] = useState([])
@@ -47,7 +47,7 @@ function UserList({data, isLoading, onScroll}) {
         <>
             <div id="scrollableDiv"
                  style={{
-                     height: '100vh',
+                     height: '80vh',
 
                      overflow: 'auto',
                      scrollbarWidth: 0
@@ -73,7 +73,7 @@ function UserList({data, isLoading, onScroll}) {
                           )}>
 
                     </List>
-                    <ModalChooseScanner open={isModalOpen} onCloseScan={onModalClose} data={scanners} reloadScanners={getScannersData} isLoading={isScannersLoading} patient={patient} onClose={() => {openModal(false)}}></ModalChooseScanner>
+                    <ModalChooseScanner open={isModalOpen} onCloseScan={onModalClose} data={scanners} reloadScanners={getScannersData} isLoading={isScannersLoading} groupDoc={groupDoc} patient={patient} onClose={() => {openModal(false)}}></ModalChooseScanner>
                     <ResultModal isOpen={resultModal} onClose={() => {setResultModal(false); setIsScanOk(false)}} isOk={isScanOk} patient={patient}></ResultModal>
                 </InfiniteScroll>
             </div>

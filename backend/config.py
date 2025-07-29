@@ -22,6 +22,13 @@ class Config:
     TABLE_SCHEMA_PDF = os.getenv('TABLE_SCHEMA_PDF')
     DATABASE_URL_PDF = f"postgresql+asyncpg://{DB_USER_PDF}:{DB_PASSWORD_PDF}@{DB_HOST_PDF}:{DB_PORT_PDF}/{DB_NAME_PDF}"
 
+    DB_HOST_GROUP_DOC = os.getenv('DB_HOST_GROUP_DOC')
+    DB_PORT_GROUP_DOC = os.getenv('DB_PORT_GROUP_DOC')
+    DB_USER_GROUP_DOC = os.getenv('DB_USER_GROUP_DOC')
+    DB_PASSWORD_GROUP_DOC = os.getenv('DB_PASSWORD_GROUP_DOC')
+    DB_NAME_GROUP_DOC = os.getenv('DB_NAME_GROUP_DOC')
+    DATABASE_URL_GROUP_DOC = f"postgresql+asyncpg://{DB_USER_GROUP_DOC}:{DB_PASSWORD_GROUP_DOC}@{DB_HOST_GROUP_DOC}:{DB_PORT_GROUP_DOC}/{DB_NAME_GROUP_DOC}"
+
 
 config = Config()
 
