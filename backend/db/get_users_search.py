@@ -1,6 +1,3 @@
-import asyncio
-
-from click import command
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import text
 
@@ -70,6 +67,6 @@ async def get_users_search(session: AsyncSession, limit, offset, line, type_of_u
     return request
 
 
-if __name__ == '__main__':
-    session = get_session()
-    asyncio.run(get_users_search(session=session, line='kk', limit=10, offset=0))
+# if __name__ == '__main__':
+#     session = get_session()
+#     asyncio.run(get_users_search(session=session, line='kk', limit=10, offset=0))

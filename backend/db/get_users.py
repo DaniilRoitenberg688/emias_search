@@ -33,8 +33,7 @@ async def get_users(session: AsyncSession, limit, offset, type_of_users: TypeOfU
 
     return request
 
-
-
-if __name__ == "__main__":
-    session = get_session()
-    asyncio.run(get_users(session=session))
+#
+# if __name__ == '__main__':
+#     session = get_session()
+#     asyncio.run(get_users(session=session))

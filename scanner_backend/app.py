@@ -26,7 +26,7 @@ class Scanner(BaseModel):
 load_dotenv()
 
 base_command = os.environ.get('COMMAND', 'C:/Program Files/NAPS2/NAPS2.Console.exe')
-url = os.environ.get('URL', 'http://localhost:5252')
+url = os.environ.get('FRONT_URL', 'http://scan-doc-ppak.vmeda.local')
 
 app = FastAPI()
 
