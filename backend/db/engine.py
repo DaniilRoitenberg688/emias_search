@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 DATABASE_URL = config.DATABASE_URL
 DATABASE_URL_PDF = config.DATABASE_URL_PDF
-DATABASE_URL_GROUP_DOC = config.DATABASE_URL_GROUP_DOC
+DATABASE_URL_GROUP_DOC = config.DATABASE_URL_PDF
 
 engine = create_async_engine(DATABASE_URL)
 engine_pdf = create_async_engine(DATABASE_URL_PDF)

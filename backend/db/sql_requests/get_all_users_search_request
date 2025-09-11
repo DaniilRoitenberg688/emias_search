@@ -6,12 +6,12 @@ SELECT DISTINCT * FROM
           md.id                        as mdoc_id /*hospdoc */
            , mm.mdoc_get_num_format(md.num, md.year, md.num_org,
                                     md.num_filial, md.num_type,
-                                    mdt.id, mdt.class,
+                                    mdtp.id, mdtp.class,
                                     data) as ib_num
       FROM mm.hospdoc hd
                JOIN mo on true
                JOIN mm.mdoc md on md.id = hd.mdoc_id
-               JOIN mm.mdoc_type         mdt on mdt.id = md.mdoc_type_id
+               JOIN mm.mdoc_type         mdtp on mdtp.id = md.mdoc_type_id
                JOIN mm.people p on md.people_id = p.id
 
       WHERE true {search_command}
@@ -23,12 +23,12 @@ SELECT DISTINCT * FROM
           md.id                                                 as mdoc_id    /*ambticket */
            ,mm.mdoc_get_num_format(md.num,md.year,md.num_org,
                                    md.num_filial,md.num_type,
-                                   mdt.id,mdt.class,
+                                   mdtp.id,mdtp.class,
                                    data)                as ib_num
       FROM mm.ambticket a
                JOIN mo on true
                JOIN mm.mdoc md on md.id = a.mdoc_id
-               JOIN mm.mdoc_type         mdt on mdt.id = md.mdoc_type_id
+               JOIN mm.mdoc_type         mdtp on mdtp.id = md.mdoc_type_id
                JOIN mm.people p on md.people_id = p.id
     WHERE true {search_command}
             ) as t
