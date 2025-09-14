@@ -21,6 +21,8 @@ FROM	mm.hospdoc AS hd
             LEFT JOIN mm.emp e ON e.id = hd.doctor_emp_id
             LEFT JOIN mm.people e_p ON e_p.id = e.people_id
             LEFT JOIN mm.hosp_plan hp on hp.ehr_case_id = hd.ehr_case_id
+            INNER JOIN mm.people p ON p.id = md.people_id
+            LEFT JOIN mm.pinfo f ON f.people_id = p.id
 
 WHERE	location_status_id = 1 /* ea.state_value = 'planned' */
   AND	hd.dept_id = hd.admission_dept_id

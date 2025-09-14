@@ -3,7 +3,7 @@ import axios from "axios";
 
 let apiUrl = import.meta.env.VITE_API_URL;
 if (apiUrl === undefined) {
-    apiUrl = 'http://localhost:8080/api'
+    console.error("Cannot access main api, because url was not provided")
 }
 
 

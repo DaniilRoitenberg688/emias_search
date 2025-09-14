@@ -25,7 +25,7 @@ function LoginWindow() {
                 localStorage.setItem('time', Date.now())
                 localStorage.setItem('afterLogin', true)
             }
-            window.location = '/'
+            window.location = '/choose_dept'
         }
 
 

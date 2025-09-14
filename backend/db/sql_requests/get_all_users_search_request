@@ -1,36 +1,17 @@
-with mo(data) as (SELECT value FROM mm.adj WHERE (key = 'DISPLAY_NUM_FORMAT'     and section = 'IB'))
+with mo(data) as (SELECT value FROM mm.adj WHERE (key = 'DISPLAY_NUM_FORMAT' and section = 'IB'))
 
-
-SELECT DISTINCT * FROM
-    ((SELECT upper(concat_ws(' ', md.surname, md.name, md.patron)) as fio,
-          md.id                        as mdoc_id /*hospdoc */
-           , mm.mdoc_get_num_format(md.num, md.year, md.num_org,
-                                    md.num_filial, md.num_type,
-                                    mdtp.id, mdtp.class,
-                                    data) as ib_num
-      FROM mm.hospdoc hd
-               JOIN mo on true
-               JOIN mm.mdoc md on md.id = hd.mdoc_id
-               JOIN mm.mdoc_type         mdtp on mdtp.id = md.mdoc_type_id
-               JOIN mm.people p on md.people_id = p.id
-
-      WHERE true {search_command}
-      )
-
-      UNION ALL
-
-      SELECT upper(concat_ws(' ', md.surname, md.name, md.patron)) as fio,
-          md.id                                                 as mdoc_id    /*ambticket */
-           ,mm.mdoc_get_num_format(md.num,md.year,md.num_org,
-                                   md.num_filial,md.num_type,
-                                   mdtp.id,mdtp.class,
-                                   data)                as ib_num
-      FROM mm.ambticket a
-               JOIN mo on true
-               JOIN mm.mdoc md on md.id = a.mdoc_id
-               JOIN mm.mdoc_type         mdtp on mdtp.id = md.mdoc_type_id
-               JOIN mm.people p on md.people_id = p.id
-    WHERE true {search_command}
-            ) as t
+SELECT DISTINCT
+    /* at.ehr_case_id as caseid, */
+    upper(concat_ws(' ', md.surname, md.name, md.patron)) AS FIO,
+    md.id::text                                           AS mdoc_id,
+    mm.mdoc_get_num_format(md.num, md.year, md.num_org, md.num_filial, md.num_type, mdtp.id, mdtp.class,
+                           data)                          as ib_num
+FROM mm.mdoc md
+         INNER JOIN mm.mdoc_type mdtp ON mdtp.id = md.mdoc_type_id
+         INNER JOIN mm.people p ON p.id = md.people_id
+         LEFT JOIN mm.idoc i ON i.id = md.idoc_id
+         LEFT JOIN mm.pinfo f ON f.people_id = p.id
+         JOIN mo on true
+WHERE mdoc_type_id = 6 {search_command}
 
 

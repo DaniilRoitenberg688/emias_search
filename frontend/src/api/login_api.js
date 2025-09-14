@@ -4,7 +4,7 @@ import axios from "axios";
 
 let apiUrl = import.meta.env.VITE_LOGIN_API_URL;
 if (apiUrl === undefined) {
-    apiUrl = 'http://j-auth-ppak.vmeda.local/api/v2/login'
+    console.error("No login url were found")
 }
 
 export const api = axios.create({

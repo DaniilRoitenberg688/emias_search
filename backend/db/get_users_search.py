@@ -33,7 +33,10 @@ async def get_users_search(session: AsyncSession, limit, offset, line, type_of_u
     if len(search_fields) == 1:
         if not line.isdigit():
             if '-' in line:
-                command = "\nAND mm.mdoc_get_num_format(hd.admission_num,hd.admission_year,md.num_org,md.num_filial,md.num_type,mdtp.id,mdtp.class, data) LIKE '{line}%'".format(
+                if line.count('-') == 4:
+                    command = "\n AND f.people_id = '{people_id}'".format(people_id=line)
+                else:
+                    command = "\nAND mm.mdoc_get_num_format(hd.admission_num,hd.admission_year,md.num_org,md.num_filial,md.num_type,mdtp.id,mdtp.class, data) LIKE '{line}%'".format(
                     line=search_fields[0])
             else:
                 command = "\nAND (md.surname LIKE '%{line}%' OR md.name LIKE '%{line}%' OR md.patron LIKE '%{line}%')".format(
@@ -55,7 +58,7 @@ async def get_users_search(session: AsyncSession, limit, offset, line, type_of_u
 
     else:
         return []
-    if type_of_users == TypeOfUsers.applicants:
+    if type_of_users == TypeOfUsers.applicants or type_of_users == TypeOfUsers.hospitalized:
         data = data.format(search_command=command, dept_id=dept_id)
     else:
         data = data.format(search_command=command)

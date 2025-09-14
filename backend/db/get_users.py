@@ -17,6 +17,7 @@ async def get_users(session: AsyncSession, limit, offset, type_of_users: TypeOfU
         with open("db/sql_requests/get_hospitalized_request", "r") as file:
             # LIMIT {} OFFSET {}
             data = file.read()
+            data = data.format(dept_id=dept_id)
     if type_of_users == TypeOfUsers.applicants:
         with open("db/sql_requests/get_applicants_request", "r") as file:
             # LIMIT {} OFFSET {}
