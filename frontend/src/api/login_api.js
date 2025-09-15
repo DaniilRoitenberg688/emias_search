@@ -1,9 +1,10 @@
-import {Buffer} from "buffer";
 import axios from "axios";
 
 
 let apiUrl = import.meta.env.VITE_LOGIN_API_URL;
 if (apiUrl === undefined) {
+    apiUrl = 'http://j-auth-tpak.m15.dzm/api/v2/login'
+    // apiUrl = 'http://j-auth-ppak.vmeda.local/api/v2/login'
     console.error("No login url were found")
 }
 

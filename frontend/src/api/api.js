@@ -3,6 +3,7 @@ import axios from "axios";
 
 let apiUrl = import.meta.env.VITE_API_URL;
 if (apiUrl === undefined) {
+    apiUrl = 'http://scan-doc-back:8083/'
     console.error("Cannot access main api, because url was not provided")
 }
 

@@ -1,7 +1,8 @@
 import axios from "axios";
 
-const apiUrl = import.meta.env.VITE_SCANNER_API_URL;
+let apiUrl = import.meta.env.VITE_SCANNER_API_URL;
 if (apiUrl === undefined) {
+    apiUrl = 'http://localhost:3000'
     console.error("No scanner url were found")
 }
 // const apiUrl = '/api'

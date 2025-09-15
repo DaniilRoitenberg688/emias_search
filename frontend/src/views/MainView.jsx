@@ -81,7 +81,7 @@ function MainView() {
         if (!searchLine) {
             newData = await getUsers((page + 1) * toLoad, toLoad, currentUsersType)
         } else {
-            newData = await getSearchUsers(searchLine, 0, toLoad, currentUsersType)
+            newData = await getSearchUsers(searchLine, (page + 1) * toLoad, toLoad, currentUsersType)
         }
 
         oldData.concat(newData);
