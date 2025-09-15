@@ -11,7 +11,7 @@ FROM mm.mdoc md
     JOIN mm.people p ON p.id = md.people_id
     LEFT JOIN mm.pinfo f ON f.people_id = p.id
 
-WHERE mdoc_type_id = 6 {search_command}
+WHERE 1=1 {search_command}
 
 LIMIT :limit
 OFFSET :offset
