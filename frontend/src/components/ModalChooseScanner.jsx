@@ -27,7 +27,8 @@ function ModalChooseScanner({open, onCloseScan, data, isLoading, patient, onClos
         <>
             <Modal title={'Выбор сканера'} open={open} onCancel={onClose} footer={<Button color={'cyan'} variant={'outlined'} onClick={onClose}>Закрыть</Button>}>
                 <h3 style={{'margin-top': '30px'}}>Пациент: {patient.fio}</h3>
-                <h3 style={{'margin-bottom': '30px'}}>Номер ИБ: {patient.ib_num}</h3>
+                <h3 style={{'margin-top': '30px'}}>Номер ИБ: {patient.ib_num}</h3>
+                <h3 style={{'margin-top': '30px'}}>ВМедА ID: {patient.pacs_uid}</h3>
                 <div>
                     <Select style={{width: '250px'}} options={selectOptions} defaultValue={'Выберете группу документа'} onChange={(value) => {setSelectedGroupDocId(value)}}></Select>
                 </div>

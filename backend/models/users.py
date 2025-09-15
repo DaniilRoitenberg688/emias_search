@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 
 from pydantic import BaseModel
 from enum import Enum
@@ -13,3 +14,4 @@ class UserOut(BaseModel):
     fio: str
     mdoc_id: uuid.UUID
     ib_num: str
+    pacs_uid: Optional[str]

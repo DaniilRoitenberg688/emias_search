@@ -12,24 +12,24 @@ user_router = APIRouter(prefix="/users",
 @user_router.get("", response_model=list[UserOut], status_code=200)
 async def get_all(
     dept_id: str,
+    offset: int,
+    limit: int,
     session: AsyncSession = Depends(get_session),
-    offset: int | None = None,
-    limit: int | None = None,
     type_of_users: TypeOfUsers = TypeOfUsers.all_users,
 ):
     users = await get_users_data(
         session, offset=offset, limit=limit, type_of_users=type_of_users, dept_id=dept_id
     )
-    return [UserOut(fio=i.fio, ib_num=i.ib_num, mdoc_id=i.mdoc_id) for i in users]
+    return [UserOut(fio=i.fio, ib_num=i.ib_num, mdoc_id=i.mdoc_id, pacs_uid=i.pacs_uid) for i in users]
 
 
 @user_router.get("/search", response_model=list[UserOut], status_code=200)
 async def get_with_search(
     search_line: str,
     dept_id: str,
+    offset: int,
+    limit: int,
     session: AsyncSession = Depends(get_session),
-    offset: int | None = None,
-    limit: int | None = None,
     type_of_users: TypeOfUsers = TypeOfUsers.all_users,
 ):
     users = await get_users_search(
@@ -40,4 +40,4 @@ async def get_with_search(
         type_of_users=type_of_users,
         dept_id=dept_id
     )
-    return [UserOut(fio=i.fio, ib_num=i.ib_num, mdoc_id=i.mdoc_id) for i in users]
+    return [UserOut(fio=i.fio, ib_num=i.ib_num, mdoc_id=i.mdoc_id, pacs_uid=i.pacs_uid) for i in users]

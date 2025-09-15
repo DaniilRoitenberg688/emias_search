@@ -1,12 +1,10 @@
-import {Divider, List, Skeleton, Spin} from 'antd';
+import {Divider, List} from 'antd';
 import {Button} from 'antd';
-import VirtualList from 'rc-virtual-list';
 import {ScanOutlined} from '@ant-design/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ModalChooseScanner from "./ModalChooseScanner.jsx";
 import {useState} from "react";
 import {getScanners} from "../api/scanner_api.js";
-import okModal from "./ResultModal.jsx";
 import ResultModal from "./ResultModal.jsx";
 
 function UserList({data, isLoading, onScroll, groupDoc}) {
@@ -64,7 +62,12 @@ function UserList({data, isLoading, onScroll, groupDoc}) {
                     <List id='scrollingList' dataSource={data} size={'default'} loading={isLoading}
                           renderItem={(item, index) => (
                               <List.Item>
-                                  <List.Item.Meta title={item.fio} description={item.ib_num}></List.Item.Meta>
+                                  <List.Item.Meta title={item.fio} description={
+                                      <>
+                                          {item.ib_num}
+                                          {item.pacs_uid && ` / ${item.pacs_uid}`}
+                                      </>
+                                  } ></List.Item.Meta>
                                   <div>
                                       <Button color={'cyan'} variant={"solid"}
                                               onClick={() => onModalOpen(item)}><ScanOutlined/></Button>
