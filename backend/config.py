@@ -68,6 +68,23 @@ class Config:
 
         self.DATABASE_URL_PDF = f"postgresql+asyncpg://{self.DB_USER_PDF}:{self.DB_PASSWORD_PDF}@{self.DB_HOST_PDF}:{self.DB_PORT_PDF}/{self.DB_NAME_PDF}"
 
+        self.REDIS_DB = os.environ.get("spring.redis.database", str)
+        self.REDIS_HOST = os.environ.get("spring.redis.host", str)
+        self.REDIS_PORT = os.environ.get("spring.redis.port", int)
+        self.REDIS_PASSWORD = os.environ.get("spring.redis.password", str)
+        self.REDIS_TIMEOUT = os.environ.get("spring.redis.timeout") or 3000
+
+
+        self.REDIS_SENTINEL_HOST = os.environ.get("spring.redis.sentinel.host", str)
+        self.REDIS_SENTINEL_MASTER = os.environ.get("spring.redis.sentinel.master", str)
+        self.REDIS_SENTINEL_PASSWORD = os.environ.get("spring.redis.sentinel.password", str)
+        self.REDIS_SENTINEL_PORT = os.environ.get("spring.redis.sentinel.port", int)
+
+        self.SESSION_TIME = os.environ.get("SESSION_TIME") or 3600
+
+
+
+
 
 
     def parse_jdbc_string(self, jdbc: str, pat: list[Pattern[str]] = None) -> dict:

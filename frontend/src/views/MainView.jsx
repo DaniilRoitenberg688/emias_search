@@ -1,12 +1,14 @@
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useContext} from 'react'
 import {getUsers, getSearchUsers} from "../api/api.js";
 import BottomMenu from "../components/BottomMenu.jsx";
 import SearchBar from '../components/SearchBar';
 import UserList from '../components/UserList';
 import {Button, Layout, Typography} from "antd";
-import {LogoutOutlined, UserOutlined} from "@ant-design/icons";
+import {LogoutOutlined, RedditOutlined, UserOutlined} from "@ant-design/icons";
 import {getGroupDoc} from "../api/group_doc.js";
-
+import UserContext from "../contexts/UserContext.jsx";
+import {serviceworker} from "globals";
+import {deleteToken, getToken} from "../api/storage_api.js";
 
 
 function MainView() {
@@ -18,6 +20,7 @@ function MainView() {
 
     const [page, setPage] = useState(0);
     const toLoad = 20
+    const [user, setUser] = useContext(UserContext);
 
     const [searchLine, setSearchLine] = useState('')
 
@@ -26,13 +29,16 @@ function MainView() {
     const [groupDoc, setGroupDoc] = useState([]);
 
     const checkLogin = async () => {
-        if (localStorage.getItem('token') === null) {
+        if (localStorage.getItem('id') === null) {
+            // if (user.token === null) {
             localStorage.clear()
+            await deleteToken()
             window.location.href = '/login'
         }
 
         if (localStorage.getItem('time') === null) {
-            localStorage.removeItem('token')
+            // if (user.time === null) {
+            localStorage.removeItem("id");
             return
         }
         if (localStorage.getItem('afterLogin')) {
@@ -42,11 +48,15 @@ function MainView() {
 
         let time = parseInt(localStorage.getItem('time'));
 
-        const session_time = parseInt(import.meta.env.VITE_SESSION_TIME_IN_MILLISECONDS)
-        console.log(session_time)
-
-        if (Date.now() - time > session_time) {
-            localStorage.clear()
+        // const session_time = parseInt(import.meta.env.VITE_SESSION_TIME_IN_MILLISECONDS)
+        // console.log(session_time)
+        //
+        // if (Date.now() - time > session_time) {
+        //     setUser({})
+        //     window.location.href = '/login'
+        // }
+        let token = await getToken()
+        if (token === null) {
             window.location.href = '/login'
         }
 
@@ -113,19 +123,37 @@ function MainView() {
 
     }
 
-    const logout = () => {
+    const logout = async () => {
+        await deleteToken()
         localStorage.clear()
+
         window.location.href = '/login'
     }
 
 
     return (
         <>
-            <Layout style={{ padding: 0, margin: 0, display: 'flex', flexDirection: 'column' }}>
-                <Header style={{boxSizing: 'border-box', backgroundColor: '#13c2c2', marginBottom: '25px', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+            <Layout style={{padding: 0, margin: 0, display: 'flex', flexDirection: 'column'}}>
+                <Header style={{
+                    boxSizing: 'border-box',
+                    backgroundColor: '#13c2c2',
+                    marginBottom: '25px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                }}>
                     {/*<span>{localStorage.getItem('firstName')} {localStorage.getItem('lastName')}</span>*/}
-                    <Text strong={true} style={{color: '#fafafa', lineHeight: '25px', fontSize: '17px'}}><UserOutlined />  {localStorage.getItem('firstName')} {localStorage.getItem('lastName')}</Text>
-                    <Button onClick={logout} variant={"solid"} color={'danger'} shape={'round'} style={{}}>Выйти <LogoutOutlined /></Button>
+                    <Text strong={true} style={{
+                        color: '#fafafa',
+                        lineHeight: '25px',
+                        fontSize: '17px'
+                    }}><UserOutlined/> {localStorage.getItem('firstName')} {localStorage.getItem('lastName')}</Text>
+                    <div>
+                        <Button onClick={() => {window.location = "/choose_dept"}} variant={"solid"} color={'purple'} shape={'round'}
+                                style={{marginRight: "10px"}}>Сменить профиль <RedditOutlined /></Button>
+                        <Button onClick={logout} variant={"solid"} color={'danger'} shape={'round'}
+                                style={{}}>Выйти <LogoutOutlined/></Button>
+                    </div>
 
                 </Header>
 
@@ -139,7 +167,7 @@ function MainView() {
                 </Content>
 
                 <Footer style={{width: '100%', padding: 0, position: 'absolute', bottom: 0}}>
-                        <BottomMenu changeUsersType={changeUsersType}/>
+                    <BottomMenu changeUsersType={changeUsersType}/>
                 </Footer>
             </Layout>
         </>

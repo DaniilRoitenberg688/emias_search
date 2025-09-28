@@ -1,7 +1,7 @@
 services:
   backend:
     build: ./backend
-    container_name: emias_search_backend
+    container_name: scan-doc-back
     develop:
       watch:
         - action: rebuild 
@@ -10,7 +10,7 @@ services:
             - .venv
             - .idea
     ports:
-      - "8000:8000"
+      - "8083:8080"
     dns:
       - 8.8.8.8
       - 8.8.4.4
@@ -21,7 +21,7 @@ services:
       dockerfile: Dockerfile
     container_name: emias_search_frontend
     ports:
-      - "127.0.0.1:5252:80"
+      - "127.0.0.1:5252:8080"
     depends_on:
       - backend
     logging:

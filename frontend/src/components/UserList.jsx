@@ -17,7 +17,6 @@ function UserList({data, isLoading, onScroll, groupDoc}) {
     const [isScanOk, setIsScanOk] = useState(false)
 
     const onModalClose = async (code) => {
-        openModal(false)
         if (code === 200) {
             setIsScanOk(true)
         }

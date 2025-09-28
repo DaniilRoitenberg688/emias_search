@@ -2,12 +2,18 @@ import {Alert, Button, Card, Checkbox, ConfigProvider, Form, Input} from 'antd';
 import {LockOutlined, UserOutlined} from "@ant-design/icons";
 import {loginRequest} from "../api/login_api.js";
 import {Buffer} from "buffer";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
+import AppContext from "../contexts/AppContext.jsx";
+import {useNavigate} from "react-router-dom";
+import UserContext from "../contexts/UserContext.jsx";
+import {setToken} from "../api/storage_api.js";
 
 function LoginWindow() {
     const [error, setError] = useState(false);
-
+    const [profiles, setProfiles] = useContext(AppContext);
+    const [_, setUser] = useContext(UserContext);
     const [form] = Form.useForm();
+    const navigate = useNavigate();
     Form.useWatch(() => {setError(false)}, form)
 
     const login = async (values) => {
@@ -16,16 +22,29 @@ function LoginWindow() {
         console.log(token);
         let [status, data] = await loginRequest(token).catch(() => setError(true));
         if (status === 200) {
+            // let userData = {
+            //     'firstName': data.firstName,
+            //     'lastName': data.lastName,
+            //     'token': token,
+            //
+            // }
             localStorage.setItem('firstName', data.firstName)
             localStorage.setItem('lastName', data.lastName)
-            localStorage.setItem('token', token)
-            console.log(data['profiles'][0])
-            localStorage.setItem('deptId', data['profiles'][0]['deptID'])
+            // localStorage.setItem('remember', "1")
+            let id = await setToken(token)
+            localStorage.setItem('id', id)
             if (values.remember) {
                 localStorage.setItem('time', Date.now())
                 localStorage.setItem('afterLogin', true)
+                // userData['time'] = Date.now()
+                // userData['afterLogin'] = true
             }
-            window.location = '/choose_dept'
+            // setUser(userData);
+            setProfiles(data['profiles']);
+            navigate("/choose_dept")
+        }
+        else {
+            setError(true);
         }
 
 

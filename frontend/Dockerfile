@@ -13,7 +13,7 @@ RUN npm install
 COPY . .
 ENV NODE_ENV=production
 ENV VITE_SESSION_TIME_IN_MILLISECONDS=3600000
-ENV VITE_LOGI N_API_URL='http://j-auth-ppak.vmeda.local/api/v2/login'
+ENV VITE_LOGIN_API_URL='http://j-auth-ppak.vmeda.local/api/v2/login'
 ENV VITE_API_URL='/api'
 RUN npm run build
 
@@ -29,5 +29,5 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Копируем собранные файлы из первого этапа
 COPY --from=build /app/dist /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

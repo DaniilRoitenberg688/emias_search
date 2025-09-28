@@ -1,8 +1,9 @@
 from fastapi import FastAPI
-from routes import user_router, scan_router, group_doc_router
+from routes import user_router, scan_router, group_doc_router, storage_router
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.staticfiles import StaticFiles
+
 
 
 app = FastAPI(
@@ -14,13 +15,13 @@ app = FastAPI(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 ######### На проде CORS не нужен
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=['http://localhost:5173'],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['http://localhost:5173'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
@@ -49,6 +50,7 @@ def ping():
 app.include_router(user_router)
 app.include_router(scan_router)
 app.include_router(group_doc_router)
+app.include_router(storage_router)
 
 
 
