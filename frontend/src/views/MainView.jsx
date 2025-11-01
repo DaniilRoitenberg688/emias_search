@@ -103,10 +103,12 @@ function MainView() {
     const loadGroupDocs = async () => {
         let data = await getGroupDoc()
         setGroupDoc(data)
+        console.log("sdfsdf")
     }
 
 
     useEffect(() => {
+        console.log('sdfjaaokdjfhjiardgh')
         checkLogin()
         loadGroupDocs()
     }, [])

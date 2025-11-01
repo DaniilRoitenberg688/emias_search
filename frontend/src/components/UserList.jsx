@@ -15,20 +15,41 @@ function UserList({data, isLoading, onScroll, groupDoc}) {
     const [patient, setPatient] = useState('')
     const [resultModal, setResultModal] = useState(false)
     const [isScanOk, setIsScanOk] = useState(false)
+    const [modalTitle, setModalTitle] = useState('')
+    //const [subModalTitle, setSubModalTitle] = useState('')
 
-    const onModalClose = async (code) => {
+    const onAddedScan = async (code) => {
         if (code === 200) {
             setIsScanOk(true)
+            setModalTitle("Скан успешно добавлен")
+        }
+        else {
+            setIsScanOk(false)
+            setModalTitle("Что-то пошло не так")
         }
         setResultModal(true)
+    }
 
-
+    const onMergeDocs = async (code) => {
+        if (code === 200) {
+            setIsScanOk(true)
+            setModalTitle("Документ успешно сохранен")
+        }
+        else {
+            setIsScanOk(false)
+            setModalTitle("Что-то пошло не так")
+        }
+        openModal(false)
+        setResultModal(true)
     }
 
     const getScannersData = async () => {
         setIsScannersLoading(true)
+        console.log("adf")
         let sc = await getScanners()
+        console.log("skldhfjs")
         setScanners(sc)
+        console.log(sc)
         setIsScannersLoading(false)
     }
 
@@ -36,7 +57,7 @@ function UserList({data, isLoading, onScroll, groupDoc}) {
         openModal(true)
         setPatient(patientData)
         if (!scanners.length) {
-            getScannersData()
+            let _ = await getScannersData()
         }
     }
 
@@ -75,8 +96,8 @@ function UserList({data, isLoading, onScroll, groupDoc}) {
                           )}>
 
                     </List>
-                    <ModalChooseScanner open={isModalOpen} onCloseScan={onModalClose} data={scanners} reloadScanners={getScannersData} isLoading={isScannersLoading} groupDoc={groupDoc} patient={patient} onClose={() => {openModal(false)}}></ModalChooseScanner>
-                    <ResultModal isOpen={resultModal} onClose={() => {setResultModal(false); setIsScanOk(false)}} isOk={isScanOk} patient={patient}></ResultModal>
+                    <ModalChooseScanner open={isModalOpen} onCloseScan={onAddedScan} data={scanners} reloadScanners={getScannersData} isLoading={isScannersLoading} groupDoc={groupDoc} patient={patient} onMergeDocs={onMergeDocs} onClose={() => {openModal(false)}}></ModalChooseScanner>
+                    <ResultModal isOpen={resultModal} onClose={() => {setResultModal(false); setIsScanOk(false)}} isOk={isScanOk} title={modalTitle} subtitle={""}></ResultModal>
                 </InfiniteScroll>
             </div>
         </>

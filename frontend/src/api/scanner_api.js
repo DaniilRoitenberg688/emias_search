@@ -32,3 +32,33 @@ export const makeScan = async (mDocID, scanner, groupDocId) => {
         return error.status
     }
 }
+
+export const getDocs = async (mDocID, groupDocId) => {
+    try {
+        const response = await api.get(`${apiUrl}/documents?mdoc_id=${mDocID}&group_doc_id=${groupDocId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching docs for doc:", error);
+        return []
+    }
+}
+
+export const deleteDocApi = async (mDocID, groupDocId, filename) => {
+    try {
+        const response = await api.delete(`${apiUrl}/documents?mdoc_id=${mDocID}&group_doc_id=${groupDocId}&filename=${filename}`);
+        return response.status;
+    } catch (error) {
+        console.error("Error fetching docs for doc:", error);
+        return error.status
+    }
+}
+
+export const sendDocs = async (mDocID, groupDocId) => {
+    try {
+        const response = await api.post(`${apiUrl}/documents/send?mdoc_id=${mDocID}&group_doc_id=${groupDocId}`);
+        return response.status;
+    } catch (error) {
+        console.error("Error fetching docs for doc:", error);
+        return error.status
+    }
+}
