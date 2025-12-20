@@ -2,9 +2,12 @@ services:
   backend:
     build: ./backend
     container_name: scan-doc-back
+    env_file: ./backend/.env
+    networks:
+      - emias_search
     develop:
       watch:
-        - action: rebuild 
+        - action: rebuild
           path: backend
           ignore:
             - .venv
@@ -15,11 +18,22 @@ services:
       - 8.8.8.8
       - 8.8.4.4
 
+  redis:
+    image: redis:7.4-alpine # Using a specific, lightweight image is recommended
+    restart: always
+    environment:
+      REDIS_PASSWORD: "123456"
+    ports:
+      - "6379:6379"
+    networks:
+      - emias_search
+
   nginx:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: emias_search_frontend
+    env_file: ./frontend/.env
     ports:
       - "127.0.0.1:5252:8080"
     depends_on:
@@ -36,4 +50,9 @@ services:
           ignore:
             - node_modules
             - .idea
+    networks:
+      - emias_search
 
+networks:
+  emias_search:
+    driver: bridge

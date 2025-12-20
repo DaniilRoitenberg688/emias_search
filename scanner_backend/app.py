@@ -1,20 +1,19 @@
 import asyncio
 import base64
-from logging import raiseExceptions
 import os
-from enum import Enum
-from asyncio.subprocess import create_subprocess_exec
 import platform
-import subprocess
 import shutil
+import subprocess
+from asyncio.subprocess import create_subprocess_exec
+from enum import Enum
+from logging import raiseExceptions
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request, APIRouter
-from fastapi import HTTPException
+from fastapi import APIRouter, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from requests import post
 from pypdf import PdfWriter
+from requests import post
 
 
 class ScannerType(str, Enum):
@@ -64,7 +63,11 @@ async def get_scanners() -> list[Scanner]:
     os_name = platform.system()
     if os_name == "Linux":
         sane_command = [base_command, "console", "--listdevices", "--driver", "sane"]
-        process = await create_subprocess_exec(*sane_command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+        process = await create_subprocess_exec(
+            *sane_command,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
         stdout, _ = await process.communicate()
         for scanner in stdout.decode().split("\n"):
             if scanner:
@@ -74,10 +77,16 @@ async def get_scanners() -> list[Scanner]:
         wia_command = [base_command, "--listdevices", "--driver", "wia"]
         twain_command = [base_command, "--listdevices", "--driver", "twain"]
 
-        process = await create_subprocess_exec(*wia_command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+        process = await create_subprocess_exec(
+            *wia_command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        )
         wia_stdout, _ = await process.communicate()
 
-        process = await create_subprocess_exec(*twain_command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+        process = await create_subprocess_exec(
+            *twain_command,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
         twain_stdout, _ = await process.communicate()
 
         for scanner in twain_stdout.decode().split("\r\n"):
@@ -93,12 +102,13 @@ async def get_scanners() -> list[Scanner]:
 
 @app.post("/scan", tags=["Scanner"])
 async def make_scan(scanner: Scanner, mdoc_id: str, group_doc_id: int):
-    docs_path = f"{base_path}/{mdoc_id}_{str(group_doc_id)}",
+    docs_path = f"{base_path}/{mdoc_id}_{str(group_doc_id)}"
+    if not os.path.isdir(docs_path):
+        os.mkdir(docs_path)
     command = [
         base_command,
         "-o",
-        f"{docs_path}/{len(os.listdir(str(docs_path))) + 1}.pdf"
-        "--noprofile",
+        f"{docs_path}/{len(os.listdir(str(docs_path))) + 1}.pdf--noprofile",
         "--driver",
         scanner.scanner_type,
         "--device",
@@ -109,7 +119,7 @@ async def make_scan(scanner: Scanner, mdoc_id: str, group_doc_id: int):
             base_command,
             "console",
             "-o",
-            f"{docs_path}/{len(os.listdir(str(docs_path))) + 1}.pdf"
+            f"{docs_path}/{len(os.listdir(str(docs_path))) + 1}.pdf",
             "--noprofile",
             "--driver",
             scanner.scanner_type,
@@ -160,14 +170,14 @@ async def send_docs(mdoc_id: str, group_doc_id: int):
         raise HTTPException(404, "cannot find any docs for this patient")
     if not os.listdir(f"{base_path}/{mdoc_id}_{group_doc_id}"):
         raise HTTPException(400, "No files")
-    writer = PdfWriter()         
+    writer = PdfWriter()
     for f in os.listdir(f"{base_path}/{mdoc_id}_{group_doc_id}"):
         writer.append(f"{base_path}/{mdoc_id}_{group_doc_id}/{f}")
     with open(f"{base_path}/{mdoc_id}_{group_doc_id}/result.pdf", "wb") as file:
         writer.write(file)
     writer.close()
 
-    with open(f"{base_path}/{mdoc_id}_{group_doc_id}/result.pdf", "rb") as file:
+    with open(f"{base_path}/{mdoc_id}_{group_doc_id}/rcGwhPVtWUr3xWEB5esult.pdf", "rb") as file:
         data = file.read()
 
         send_data = {
