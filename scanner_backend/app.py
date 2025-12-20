@@ -177,7 +177,7 @@ async def send_docs(mdoc_id: str, group_doc_id: int):
         writer.write(file)
     writer.close()
 
-    with open(f"{base_path}/{mdoc_id}_{group_doc_id}/rcGwhPVtWUr3xWEB5esult.pdf", "rb") as file:
+    with open(f"{base_path}/{mdoc_id}_{group_doc_id}/result.pdf", "rb") as file:
         data = file.read()
 
         send_data = {

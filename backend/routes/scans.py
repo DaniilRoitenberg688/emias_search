@@ -1,16 +1,14 @@
 import base64
+import uuid
 
-from fastapi import APIRouter
-from fastapi import Depends
-from fastapi import HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.engine import get_session_pdf
 from db.models import PdfMdoc
 from models import PdfMdocModel
-import uuid
 
-scan_router = APIRouter(prefix='/scan', tags=['scan'])
+scan_router = APIRouter(prefix="/scan", tags=["scan"])
 
 
 # @scan_router.get('')
@@ -66,11 +64,14 @@ scan_router = APIRouter(prefix='/scan', tags=['scan'])
 #         print(e)
 #         raise HTTPException(status_code=400, detail={'reason': e})
 
-@scan_router.post('')
-async def create_scan(user_scan: PdfMdocModel, session_pdf: AsyncSession = Depends(get_session_pdf)):
+
+@scan_router.post("")
+async def create_scan(
+    user_scan: PdfMdocModel, session_pdf: AsyncSession = Depends(get_session_pdf)
+):
     try:
         new_doc = PdfMdoc()
-        new_doc.mdoc_id = user_scan.mdoc_id
+        new_doc.mdoc_id = str(user_scan.mdoc_id)
         pdf_data = base64.b64decode(user_scan.data)
         new_doc.pdf_data = pdf_data
         new_doc.doc_name = str(uuid.uuid4())
@@ -80,5 +81,5 @@ async def create_scan(user_scan: PdfMdocModel, session_pdf: AsyncSession = Depen
         await session_pdf.commit()
 
     except Exception as e:
-        raise HTTPException(status_code=400, detail={'error': str(e)})
-
+        print(e)
+        raise HTTPException(status_code=400, detail={"error": str(e)})
