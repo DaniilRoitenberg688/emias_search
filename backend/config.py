@@ -24,6 +24,9 @@ class Config:
                 r"jdbc:postgresql://(?P<user>\w+):(?P<password>[^\/]+)@(?P<host>[\w\.-]+):(?P<port>\d+)/(?P<database>[\w\-]+)"
             ),
         ]
+
+        self.MODE = os.environ.get("MODE")
+
         # получение строки конфигурации для бд с пациентами
         self.JDBC_STRING = os.environ.get("mainpool.jdbcString", '')
         # проверка на то что она есть 

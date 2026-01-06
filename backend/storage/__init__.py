@@ -9,10 +9,12 @@ sentinel = Sentinel(
     password=config.REDIS_SENTINEL_PASSWORD,
     socket_timeout=float(config.REDIS_TIMEOUT),
 )
-##### Раскоментировать при работе в проде
-# redis = sentinel.master_for(
-#     service_name=config.REDIS_SENTINEL_MASTER,
-#     decode_responses=True,
-# )
 
-redis = Redis(host=str(config.REDIS_HOST), port=6379, decode_responses=True)
+
+redis = sentinel.master_for(
+    service_name=config.REDIS_SENTINEL_MASTER,
+    decode_responses=True,
+)
+
+if config.MODE is not None:
+    redis = Redis(host=str(config.REDIS_HOST), port=6379, decode_responses=True)
