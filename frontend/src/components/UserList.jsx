@@ -50,12 +50,44 @@ function UserList({data, isLoading, onScroll, groupDoc}) {
         console.log("skldhfjs")
         setScanners(sc)
         console.log(sc)
+        // let _ = await checkAccess()
+
         setIsScannersLoading(false)
+    }
+
+    const filters = [{ classCode: 0x07 }];
+    const getAccess = () => {
+        navigator.usb
+            .requestDevice({ filters: filters })
+            .then((usbDevice) => {
+                console.log("Product name: " + usbDevice.productName);
+            })
+            .catch((e) => {
+                console.log("There is no device. " + e);
+            });
+    };
+
+    const checkAccess = async () => {
+        navigator.usb.getDevices().then((devices) => {
+            let data = [];
+            if (devices.length === 0) {
+                getAccess()
+            } else {
+                devices.forEach((device) => {
+                    let a = {}
+                    a.name = device.productName
+                    a.scanner_type = "twain"
+                    data.push(a)
+                });
+            }
+            setScanners(data)
+        });
     }
 
     const onModalOpen = async (patientData) => {
         openModal(true)
         setPatient(patientData)
+        checkAccess()
         if (!scanners.length) {
             let _ = await getScannersData()
         }

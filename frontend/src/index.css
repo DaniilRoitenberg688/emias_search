@@ -3,6 +3,10 @@ body {
     margin: 0;
 }
 
+.rpv-core__text-layer {
+    display: none;
+}
+
 .ant-input:focus {
     border-color: #13c2c2;
     outline: 0;

@@ -1,5 +1,10 @@
 import base64
 import os
+<<<<<<< HEAD
+=======
+from os.path import isfile
+import platform
+>>>>>>> 71abd1a (added preview. probably fixed scanner problems)
 import shutil
 from enum import Enum
 import platform
@@ -11,6 +16,7 @@ import asyncio
 import img2pdf
 from dotenv import load_dotenv
 from fastapi import APIRouter, FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pypdf import PdfWriter
@@ -151,6 +157,22 @@ async def get_docs(mdoc_id: str, group_doc_id: int) -> list[str]:
             404, "cannot find any docs, associated with this user and document group"
         )
     return os.listdir(f"{base_path}/{user_dir}")
+
+
+@docs_router.get("/file", status_code=200)
+async def get_docs_file(mdoc_id: str, group_doc_id: int, filename: str) -> FileResponse:
+    f = f"{base_path}/{mdoc_id}_{str(group_doc_id)}/{filename}"
+    if not os.path.isfile(f):
+        raise HTTPException(
+            400,
+            "cannot find this file"
+        )
+    return FileResponse(
+        path=f,
+        filename=filename,
+        media_type="application/pdf"
+    )
+
 
 
 @docs_router.delete("", status_code=204)

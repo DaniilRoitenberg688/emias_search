@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import {deleteDocApi, getDocs, makeScan, sendDocs} from "../api/scanner_api.js";
 import {useEffect, useState} from "react";
+import ModalPreview from "./ModalPreview.jsx";
 
 function ModalChooseScanner({
                                 open,
@@ -22,6 +23,8 @@ function ModalChooseScanner({
     const [selectedGroupDoc, setSelectedGroupDocId] = useState(0);
     const [defaultVal, setDefaultVal] = useState(null);
     const [files, setFiles] = useState([]);
+    const [isPdfOpen, setPdfOpen] = useState(false)
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const changeGroupDoc = async (id) => {
         setSelectedGroupDocId(id);
@@ -58,6 +61,20 @@ function ModalChooseScanner({
         }
     };
 
+
+
+    const pdfOpen = async (item) => {
+        setPdfOpen(true)
+        setSelectedFile(item)
+
+    }
+    const pdfClose = async () => {
+        setPdfOpen(false)
+    }
+
+
+
+
     return (
         <>
             <Modal
@@ -81,6 +98,12 @@ function ModalChooseScanner({
                     </div>
                 }
             >
+
+
+                <ModalPreview isModalOpen={isPdfOpen} onClose={pdfClose} groupDocId={selectedGroupDoc} mDocId={patient.mdoc_id} fileName={selectedFile}></ModalPreview>
+
+
+
                 <h3 style={{"margin-top": "30px"}}>Пациент: {patient.fio}</h3>
                 <h3 style={{"margin-top": "30px"}}>Номер ИБ: {patient.ib_num}</h3>
                 <h3 style={{"margin-top": "30px"}}>ВМедА ID: {patient.pacs_uid}</h3>
@@ -154,6 +177,15 @@ function ModalChooseScanner({
                             renderItem={(item, index) => (
                                 <List.Item>
                                     <List.Item.Meta avatar={<FileOutlined/>} title={item}/>
+                                    <Button
+                                        onClick={() => {
+                                            pdfOpen(item)
+                                        }}
+                                        variant="filled"
+                                        color="cyan"
+                                    >
+                                        Посмотреть
+                                    </Button>
                                     <Button
                                         onClick={() => {
                                             deleteDoc(item);
