@@ -1,5 +1,6 @@
-from redis.asyncio.sentinel import Sentinel
 from redis.asyncio import Redis
+from redis.asyncio.sentinel import Sentinel
+
 from config import config
 
 sentinel = Sentinel(
@@ -14,4 +15,4 @@ sentinel = Sentinel(
 #     decode_responses=True,
 # )
 
-redis = Redis(host="localhost", port=6379, decode_responses=True)
+redis = Redis(host=str(config.REDIS_HOST), port=6379, decode_responses=True)
