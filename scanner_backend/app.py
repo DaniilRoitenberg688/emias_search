@@ -1,10 +1,7 @@
 import base64
 import os
-<<<<<<< HEAD
-=======
 from os.path import isfile
 import platform
->>>>>>> 71abd1a (added preview. probably fixed scanner problems)
 import shutil
 from enum import Enum
 import platform
