@@ -1,20 +1,20 @@
+import asyncio
 import base64
+import logging
 import os
-from os.path import isfile
 import platform
 import shutil
-from enum import Enum
-import platform
 import subprocess
 from asyncio.subprocess import create_subprocess_exec
 from enum import Enum
-import asyncio
+from logging.handlers import RotatingFileHandler
+from os.path import isfile
 
 import img2pdf
 from dotenv import load_dotenv
 from fastapi import APIRouter, FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from pypdf import PdfWriter
 from requests import post
@@ -142,6 +142,7 @@ async def make_scan(scanner: Scanner, mdoc_id: str, group_doc_id: int):
             },
         )
 
+
 docs_router = APIRouter(prefix="/documents", tags=["Documents"])
 
 
@@ -160,16 +161,8 @@ async def get_docs(mdoc_id: str, group_doc_id: int) -> list[str]:
 async def get_docs_file(mdoc_id: str, group_doc_id: int, filename: str) -> FileResponse:
     f = f"{base_path}/{mdoc_id}_{str(group_doc_id)}/{filename}"
     if not os.path.isfile(f):
-        raise HTTPException(
-            400,
-            "cannot find this file"
-        )
-    return FileResponse(
-        path=f,
-        filename=filename,
-        media_type="application/pdf"
-    )
-
+        raise HTTPException(400, "cannot find this file")
+    return FileResponse(path=f, filename=filename, media_type="application/pdf")
 
 
 @docs_router.delete("", status_code=204)
@@ -225,5 +218,26 @@ app.include_router(docs_router)
 
 
 if __name__ == "__main__":
+    os.system(
+        f"for /f \"tokens=5\" %a in ('netstat -ano ^| findstr :{3000} ^| findstr LISTENING') do taskkill /F /PID %a"
+    )
+    log_dir = os.path.join(os.path.dirname(__file__), "logs")
+    os.makedirs(log_dir, exist_ok=True)
+
+    log_file = os.path.join(log_dir, "app.log")
+
+    # Настраиваем root логгер
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[
+            RotatingFileHandler(
+                log_file,
+                maxBytes=10485760,  # 10MB
+                backupCount=5,
+            )
+        ],
+    )
     import uvicorn
-    uvicorn.run(app, port=3000)
+
+    uvicorn.run(app, port=3000, log_config=None, access_log=False)

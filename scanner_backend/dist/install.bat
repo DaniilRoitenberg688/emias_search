@@ -1,53 +1,65 @@
 @echo off
-:: =============================================
-:: Service Installer (Run as Administrator)
-:: =============================================
+REM =========================================
+REM Scanner Service Installer
+REM Только создание и запуск службы
+REM =========================================
 
-:: Check admin rights
+REM Проверка прав администратора
+echo Checking administrator privileges...
 net session >nul 2>&1
 if %errorLevel% neq 0 (
-    echo [ERROR] Please run this as Administrator!
+    echo ERROR: Please run as Administrator!
+    echo Right-click on this file -> "Run as administrator"
     pause
     exit /b 1
 )
 
-:: Configuration
-set "SERVICE_NAME=emias scanner module"
-set "SERVICE_DISPLAY_NAME=emias scanner module"
-set "SERVICE_DESCRIPTION=helps you to scan"
-set "EXE_NAME=scanner_module.exe"
+echo.
+echo =========================================
+echo SCANNER SERVICE INSTALLER
+echo =========================================
+echo.
 
-:: Get absolute path of the current folder
-for %%I in ("%~dp0.") do set "FOLDER_PATH=%%~fI"
-set "EXE_PATH=%FOLDER_PATH%\%EXE_NAME%"
+REM Определяем путь к exe-файлу (там же где находится этот bat файл)
+set SCRIPT_DIR=%~dp0
+set EXE_FILE=%SCRIPT_DIR%win_sys.exe
 
-:: Verify EXE exists
-if not exist "%EXE_PATH%" (
-    echo [ERROR] %EXE_NAME% not found in:
-    echo "%FOLDER_PATH%"
+echo Script directory: %SCRIPT_DIR%
+echo Executable: %EXE_FILE%
+
+REM Проверяем существование exe файла
+if not exist "%EXE_FILE%" (
+    echo ERROR: win_sys.exe not found in current directory!
+    echo Please place this bat file in the same folder as win_sys.exe
     pause
     exit /b 1
 )
 
-:: Remove old service if it exists
-sc query "%SERVICE_NAME%" >nul 2>&1
-if %errorLevel% equ 0 (
-    echo [INFO] Removing old service...
-    sc stop "%SERVICE_NAME%" >nul 2>&1
-    sc delete "%SERVICE_NAME%" >nul 2>&1
-    timeout /t 2 /nobreak >nul
+echo.
+echo =========================================
+echo CREATING SERVICE: %SERVICE_NAME%
+echo =========================================
+echo.
+
+REM Install service
+echo Step 5: Installing service...
+"%EXE_FILE%" install
+
+REM Запускаем службу
+echo Step 5: Starting service...
+sc start ScannerBackendService
+
+if %errorLevel% neq 0 (
+    echo ERROR: Failed to start service!
+    echo.
+    echo Try running manually: sc start %SERVICE_NAME%
+    pause
+    exit /b 1
 )
 
-:: Install new service
-echo [INFO] Installing service...
-sc create "%SERVICE_NAME%" binPath= "%EXE_PATH%" DisplayName= "%SERVICE_DISPLAY_NAME%" start= auto >nul
-sc description "%SERVICE_NAME%" "%SERVICE_DESCRIPTION%" >nul
-sc failure "%SERVICE_NAME%" reset= 30 actions= restart/5000 >nul
+echo.
+echo =========================================
+echo INSTALLATION COMPLETE!
+echo =========================================
 
-:: Start service
-sc start "%SERVICE_NAME%" >nul
-
-echo [SUCCESS] Service installed and running!
-echo Service Name: %SERVICE_NAME%
-echo EXE Path: "%EXE_PATH%"
 pause
