@@ -35,19 +35,20 @@ async def get_users_search(
 
     line = line.strip().upper()
     command = ""
-    params["search_field"] = line
+    params["search_field"] = line.lower()
+    print(line)
     if line:
-        if re.match(r"^[А-Яа-я]+$", line):
-            command = "\n AND to_tsvector('russian', md.surname || ' ' || md.name || ' ' || md.patron) @@ plainto_tsquery(:search_field)"
+        if re.match(r"^[А-Яа-яA-Za-z]+(?:\s+[А-Яа-яA-Za-z]+){0,2}$", line):
+            command = "\n AND fio_tsv @@ plainto_tsquery('russian', :search_field)"
         elif re.match(r"^\d{2}-\d{4,7}$", line) or re.match(r"^\d{2}.\d{4,7}$", line):
             command = "\n AND f.pacs_uid LIKE :search_field"
+            print("heurhyuhsdf")
         else:
-            command = '''\n AND case when mdtp.class = 2
+            command = """\n AND case when mdtp.class = 2
     then concat_ws('-', md.num, right(md.year, -2), md.num_type)
-        else concat_ws('-', md.num, md.year, md.num_type)end LIKE :search_field '''
+        else concat_ws('-', md.num, md.year, md.num_type)end LIKE :search_field """
     else:
         return []
-
 
     # TODO: Разобраться с логикой. Вроде накидал пример нового поиска, но не успел всё сделать.
     # if line.strip():
@@ -74,8 +75,6 @@ async def get_users_search(
     #
     # else:
     #     return []
-
-
 
     data = data.format(search_command=command)
     query = text(data)
