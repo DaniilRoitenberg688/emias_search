@@ -17,7 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from pypdf import PdfWriter
-from requests import post
+from requests import get, post
 
 
 class ScannerType(str, Enum):
@@ -179,6 +179,12 @@ async def delete_doc(mdoc_id: str, group_doc_id: int, filename: str):
 
 @docs_router.post("/send", status_code=200)
 async def send_docs(mdoc_id: str, group_doc_id: int):
+    request = get(
+        f"{url}/api/ping",
+    )
+    if request.status_code != 200:
+        raise HTTPException(400, "cannot save data yet try again later")
+
     if not os.path.isdir(f"{base_path}/{mdoc_id}_{group_doc_id}"):
         raise HTTPException(404, "cannot find any docs for this patient")
     if not os.listdir(f"{base_path}/{mdoc_id}_{group_doc_id}"):
