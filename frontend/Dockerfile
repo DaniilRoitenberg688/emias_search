@@ -20,14 +20,14 @@ RUN npm run build
 # 2. Этап запуска (release stage)
 FROM nginx:alpine
 
+RUN apk add --no-cache gettext
+
 RUN mkdir static
 
-# Скопируем собственный конфиг Nginx (если у вас есть такой)
-# Предположим, что ваш конфиг лежит в корне проекта и называется nginx.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Копируем собранные файлы из первого этапа
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 8080
-CMD ["nginx", "-g", "daemon off;"]
+
+CMD ["/bin/sh", "-c", "envsubst < /usr/share/nginx/html/env.js.template > /usr/share/nginx/html/env.js && nginx -g 'daemon off;'"]
