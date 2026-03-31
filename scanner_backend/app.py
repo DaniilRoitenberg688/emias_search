@@ -18,7 +18,30 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from pypdf import PdfWriter
 from requests import get, post
+import uvicorn
 
+os.system(
+    f"for /f \"tokens=5\" %a in ('netstat -ano ^| findstr :{3000} ^| findstr LISTENING') do taskkill /F /PID %a"
+)
+log_dir = 'C:/ScannerServiceLogs'
+os.makedirs(log_dir, exist_ok=True)
+
+log_file = os.path.join(log_dir, "app.log")
+
+# Настраиваем root логгер
+logger = logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        RotatingFileHandler(
+            log_file,
+            maxBytes=10485760,  # 10MB
+            backupCount=5,
+        )
+    ],
+)
+
+logger = logging.getLogger(__name__)
 
 class ScannerType(str, Enum):
     twain = "twain"
@@ -93,6 +116,12 @@ async def get_scanners() -> list[Scanner]:
         )
         twain_stdout, _ = await process.communicate()
 
+        logger.info(wia_stdout)
+        logger.info(wia_stdout.decode())
+
+        logger.info(twain_stdout)
+        logger.info(twain_stdout.decode())
+
         for scanner in twain_stdout.decode().split("\r\n"):
             if scanner:
                 scanners.append(Scanner(name=scanner, scanner_type=ScannerType.twain))
@@ -100,6 +129,7 @@ async def get_scanners() -> list[Scanner]:
         for scanner in wia_stdout.decode().split("\r\n"):
             if scanner:
                 scanners.append(Scanner(name=scanner, scanner_type=ScannerType.wia))
+    logger.info(scanners)
     return scanners
 
 
@@ -111,7 +141,8 @@ async def make_scan(scanner: Scanner, mdoc_id: str, group_doc_id: int):
     command = [
         base_command,
         "-o",
-        f"{docs_path}/{len(os.listdir(str(docs_path))) + 1}.pdf--noprofile",
+        f"{docs_path}/{len(os.listdir(str(docs_path))) + 1}.pdf",
+        "--noprofile",
         "--driver",
         scanner.scanner_type,
         "--device",
@@ -129,11 +160,13 @@ async def make_scan(scanner: Scanner, mdoc_id: str, group_doc_id: int):
             "--device",
             scanner.name,
         ]
+    logger.info(' '.join(command))
     command_result = subprocess.run(command, capture_output=True)
     code = command_result.returncode
     if code == 0:
         return {"status": "ok"}
     else:
+        logger.error(command_result.stdout.decode())
         raise HTTPException(
             400,
             {
@@ -144,7 +177,6 @@ async def make_scan(scanner: Scanner, mdoc_id: str, group_doc_id: int):
 
 
 docs_router = APIRouter(prefix="/documents", tags=["Documents"])
-
 
 @docs_router.get("", status_code=200)
 async def get_docs(mdoc_id: str, group_doc_id: int) -> list[str]:
@@ -199,51 +231,29 @@ async def send_docs(mdoc_id: str, group_doc_id: int):
     with open(f"{base_path}/{mdoc_id}_{group_doc_id}/result.pdf", "rb") as file:
         data = file.read()
 
-        send_data = {
-            "mdoc_id": mdoc_id,
-            "data": base64.b64encode(data).decode("utf-8"),
-            "group_doc_id": group_doc_id,
-        }
-        shutil.rmtree(f"{base_path}/{mdoc_id}_{group_doc_id}")
+    send_data = {
+        "mdoc_id": mdoc_id,
+        "data": base64.b64encode(data).decode("utf-8"),
+        "group_doc_id": group_doc_id,
+    }
+    shutil.rmtree(f"{base_path}/{mdoc_id}_{group_doc_id}")
 
-        request = post(
-            f"{url}/api/scan",
-            headers={"Content-Type": "application/json"},
-            json=send_data,
+    request = post(
+        f"{url}/api/scan",
+        headers={"Content-Type": "application/json"},
+        json=send_data,
+    )
+    if request.status_code == 200:
+        return {"result": "ok"}
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail=f"cannot send data on server. Status code: {request.status_code}",
         )
-        if request.status_code == 200:
-            return {"result": "ok"}
-        else:
-            raise HTTPException(
-                status_code=400,
-                detail=f"cannot send data on server. Status code: {request.status_code}",
-            )
 
 
 app.include_router(docs_router)
 
 
 if __name__ == "__main__":
-    os.system(
-        f"for /f \"tokens=5\" %a in ('netstat -ano ^| findstr :{3000} ^| findstr LISTENING') do taskkill /F /PID %a"
-    )
-    log_dir = os.path.join(os.path.dirname(__file__), "logs")
-    os.makedirs(log_dir, exist_ok=True)
-
-    log_file = os.path.join(log_dir, "app.log")
-
-    # Настраиваем root логгер
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        handlers=[
-            RotatingFileHandler(
-                log_file,
-                maxBytes=10485760,  # 10MB
-                backupCount=5,
-            )
-        ],
-    )
-    import uvicorn
-
     uvicorn.run(app, port=3000, log_config=None, access_log=False)
